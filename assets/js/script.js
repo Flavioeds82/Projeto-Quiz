@@ -1,74 +1,72 @@
-let query = document.querySelector.bind(document);
-let currentQuest = 0;
-let hits = 0;
-query('.scoreArea button').addEventListener('click', reset)
-showQuest();
+// Initial Data
+let currentQuestion = 0;
+let correctAnswers = 0;
+showQuestion();
 
+// Events
+document.querySelector('.scoreArea button').addEventListener('click', resetEvent);
 
+// Functions
+function showQuestion() {
+    if(questions[currentQuestion]) {
+        let q = questions[currentQuestion];
 
+        let pct = Math.floor((currentQuestion / questions.length) * 100);
+        document.querySelector('.progress--bar').style.width = `${pct}%`;
 
-function showQuest(){
-   if(questions[currentQuest]){
-      let quest = questions[currentQuest];
-      let opt = '';
-      let progress = (Math.floor((currentQuest/ (questions.length)) *100));
-      query('.progress--bar').style.width = `${progress}%`;
-      query('.scoreArea').style.display = 'none';
-      query('.questionArea').style.display = 'block';
-      query('.question').innerHTML = quest.question;
-      for (let index = 0; index < quest.options.length; index++) {
-         opt += `<div data-opt=${index} class="option"><span>${index+1}</span> ${quest.options[index]}</div>`;
-      }
-      query('.options').innerHTML = opt;
-      document.querySelectorAll('.options .option').forEach(item =>{
-         addEventListener('click', optClickEvent);
-         
-      });
-      
+        document.querySelector('.scoreArea').style.display = 'none';
+        document.querySelector('.questionArea').style.display = 'block';
 
+        document.querySelector('.question').innerHTML = q.question;
+        let optionsHtml = '';
+        for(let i in q.options) {
+            optionsHtml += `<div data-op="${i}" class="option"><span>${parseInt(i)+1}</span> ${q.options[i]}</div>`;
+        }
+        document.querySelector('.options').innerHTML = optionsHtml;
 
-   }else{
-      
-      finishQuiz();
-   }
-}
-function optClickEvent(e){
-   console.log(currentQuest + ' optclick')
-   let clickOpt = (parseInt(e.target.getAttribute('data-opt')));
-   if(questions[currentQuest].answer === clickOpt){
-      hits++;
-      console.log(currentQuest + ' optclick_if')
-   }
-   currentQuest++;
-   showQuest();
+        document.querySelectorAll('.options .option').forEach(item => {
+            item.addEventListener('click', optionClickEvent);
+        });
+    } else {
+        finishQuiz();
+    }
 }
 
-function finishQuiz(){
-   let points = (Math.floor((hits / (questions.length)) *100));
+function optionClickEvent(e) {
+    let clickedOption = parseInt(e.target.getAttribute('data-op'));
 
-   if(points < 30){
-      query('.scoreText1').innerHTML = 'Você precisa Estudar mais.'
-      query('.scorePct').style.color = 'red';
-   }else if(30 <= points && points < 50){
-      query('.scoreText1').innerHTML = 'Quaselá! Estude mais um pouco.'
-      query('.scorePct').style.color = '#ff4400';
-   }else if(50 <= points && points < 70){
-      query('.scoreText1').innerHTML = 'Bom! Mas pode melhorar!'
-      query('.scorePct').style.color = 'yellow';
-   }else if(70 <= points && points <= 99){
-      query('.scoreText1').innerHTML = 'Parabéns! Muito bom'
-      query('.scorePct').style.color = 'green';
-   }
+    if(questions[currentQuestion].answer === clickedOption) {
+        correctAnswers++;
+    }
 
-   query('.progress--bar').style.width = `100%`;
-   query('.scoreArea').style.display = 'block';
-   query('.questionArea').style.display = 'none';
-   query('.scorePct').innerHTML = `Acertou ${points}%`;
-   query('.scoreText2').innerHTML = `Você respondeu ${questions.length} questões e acertou ${hits}.`;
+    currentQuestion++;
+    showQuestion();
 }
 
-function reset(){
-  currentQuest = 0;
-  hits = 0;
-  showQuest();
+function finishQuiz() {
+    let points = Math.floor((correctAnswers / questions.length) * 100);
+
+    if(points < 30) {
+        document.querySelector('.scoreText1').innerHTML = 'Tá ruim em?!';
+        document.querySelector('.scorePct').style.color = '#FF0000';
+    } else if(points >= 30 && points < 70) {
+        document.querySelector('.scoreText1').innerHTML = 'Muito bom!';
+        document.querySelector('.scorePct').style.color = '#FFFF00';
+    } else if(points >= 70) {
+        document.querySelector('.scoreText1').innerHTML = 'Parabéns';
+        document.querySelector('.scorePct').style.color = '#0D630D';
+    }
+
+    document.querySelector('.scorePct').innerHTML = `Acertou ${points}%`;
+    document.querySelector('.scoreText2').innerHTML = `Você respondeu ${questions.length} questões e acertou ${correctAnswers}.`;
+
+    document.querySelector('.scoreArea').style.display = 'block';
+    document.querySelector('.questionArea').style.display = 'none';
+    document.querySelector('.progress--bar').style.width = '100%';
+}
+
+function resetEvent() {
+    correctAnswers = 0;
+    currentQuestion = 0;
+    showQuestion();
 }
