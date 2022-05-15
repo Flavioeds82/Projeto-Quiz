@@ -85,7 +85,7 @@ function finishQuiz() {
     let points = Math.floor((correctAnswers / questions.length) * 100);
 
     if(points < 50) {
-        document.querySelector('.scoreText1').innerHTML = 'Tá ruim em?!';
+        document.querySelector('.scoreText1').innerHTML = 'Ruim!';
         document.querySelector('.scorePct').style.color = '#FF0000';
     } else if(points >= 50 && points < 70) {
         document.querySelector('.scoreText1').innerHTML = 'Muito bom!';
